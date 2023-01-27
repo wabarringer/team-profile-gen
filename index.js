@@ -1,8 +1,22 @@
 // TODO: Generate HTML file
 const generateHtml = require("./util/generateHtml");
 
+// TODO: Link classes
+const Employee = require("./lib/Employee");
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+
+// Create array to push new objects to
+var teamArray = [];
+const addToArray = (employee) => {
+  teamArray.push(employee);
+};
+
+const fs = require("fs");
+
 // TODO: Create inquirer prompt to gather team members and their information
-const inquirer = request("inquirer");
+const inquirer = require("inquirer");
 
 function addManager() {
   inquirer
@@ -29,7 +43,16 @@ function addManager() {
         message: "What is the manager's office number?",
       },
     ])
-    .then(addEmployees());
+    .then((ans) => {
+      const newMngr = new Manager(
+        ans.mngrName,
+        ans.mngrID,
+        ans.mngrEmail,
+        ans.mngrOfficeNum
+      );
+      addToArray(newMngr);
+      addEmployees();
+    });
 }
 
 // TODO: Once inputs are made prompt user with menu with the option to add an engineer or an intern or to finish
@@ -50,7 +73,14 @@ function addEmployees() {
         addIntern();
         // TODO: When finish is selected, exit the application, and the HTML is generated
       } else {
-        team;
+        const write = generateHtml(teamArray);
+        fs.writeFile("./output/profiles.html", write, (err) => {
+          if (err) {
+            console.log("Error!");
+          } else {
+            console.log("Worked!");
+          }
+        });
       }
     });
 }
@@ -80,7 +110,16 @@ function addEngineer() {
         message: "What is the engineer's GitHub username?",
       },
     ])
-    .then(addEmployees());
+    .then((ans) => {
+      const newEngr = new Engineer(
+        ans.engrName,
+        ans.engrID,
+        ans.engrEmail,
+        ans.engrGitHub
+      );
+      addToArray(newEngr);
+      addEmployees();
+    });
 }
 
 // TODO: Prompt to enter the intern’s name, ID, email, and school,  then return to menu
@@ -108,7 +147,16 @@ function addIntern() {
         message: "What is the intern's school?",
       },
     ])
-    .then(addEmployees());
+    .then((ans) => {
+      const newInt = new Intern(
+        ans.intName,
+        ans.intID,
+        ans.intEmail,
+        ans.intSchool
+      );
+      addToArray(newInt);
+      addEmployees();
+    });
 }
 
 // TODO: Link email address to default email application with email address populated
